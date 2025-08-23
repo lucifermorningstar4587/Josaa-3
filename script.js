@@ -1,7 +1,7 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -33,7 +33,7 @@ function showMessageBox(message) {
 
 function closeMessageBox() {
     messageBox.classList.remove('is-visible');
-    messageBox.classList.add('hidden'); // Corrected to immediately hide the box
+    messageBox.classList.add('hidden');
 }
 
 // Modal functionality
@@ -99,11 +99,25 @@ document.getElementById('signin-form').addEventListener('submit', async function
 
     try {
         // Sign in user with email and password
-        // Note: Firebase uses email for sign-in, not username.
-        await signInWithEmailAndPassword(auth, data.username, data.password);
+        const userCredential = await signInWithEmailAndPassword(auth, data.username, data.password);
+        const user = userCredential.user;
+
+        // Fetch user role from Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const role = userDoc.exists() ? userDoc.data().role : 'student'; // Default to student
+
         showMessageBox('Logged in successfully!');
         this.reset();
         signinModal.classList.remove('is-visible');
+
+        // Redirect based on role
+        if (role === 'admin') {
+            window.location.href = 'admin_dashboard.html';
+        } else if (role === 'mentor') {
+            window.location.href = 'mentor_dashboard.html';
+        } else {
+            window.location.href = 'student_dashboard.html';
+        }
 
     } catch (error) {
         console.error("Sign in failed:", error);
@@ -119,7 +133,7 @@ const observer = new IntersectionObserver((entries) => {
             const counter = entry.target;
             const target = parseInt(counter.dataset.target);
             let current = 0;
-            const increment = Math.ceil(target / 200); // 200 steps for the animation
+            const increment = Math.ceil(target / 200);
             
             const updateCounter = () => {
                 current += increment;
@@ -131,10 +145,10 @@ const observer = new IntersectionObserver((entries) => {
                 }
             };
             updateCounter();
-            observer.unobserve(counter); // Stop observing after animation
+            observer.unobserve(counter);
         }
     });
-}, { threshold: 0.5 }); // Trigger when 50% of the element is visible
+}, { threshold: 0.5 });
 
 counters.forEach(counter => {
     observer.observe(counter);
