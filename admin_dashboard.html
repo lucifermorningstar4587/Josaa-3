@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOSAA PathFinder - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; overflow-x: hidden; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 250px 1fr; } }
+        .sidebar { background: #1e293b; box-shadow: 2px 0 5px rgba(0,0,0,0.2); position: fixed; left: 0; top: 0; width: 250px; height: 100%; transform: translateX(-100%); transition: transform 0.3s ease-in-out; z-index: 50; }
+        .sidebar.is-visible { transform: translateX(0); }
+        @media (min-width: 1024px) { .sidebar { position: static; transform: translateX(0); } }
+        .sidebar-link { display: flex; align-items: center; padding: 1rem 1.5rem; color: #94a3b8; font-weight: 600; transition: all 0.2s ease; border-radius: 0.5rem; margin: 0.5rem; }
+        .sidebar-link.active { background: #334155; color: #e2e8f0; }
+        .sidebar-link:hover { background: #334155; color: #e2e8f0; }
+        .main-content { padding: 1.5rem; transition: margin-left 0.3s ease; }
+        @media (min-width: 1024px) { .main-content { padding: 2.5rem; } }
+        .card { background: #1e293b; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
+        .card:hover { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); transform: translateY(-5px); }
+        .gradient-text { background-image: linear-gradient(to right, #8b5cf6, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-toggle-btn { z-index: 100; position: fixed; top: 1rem; left: 1rem; background: #1e293b; border: 1px solid #334155; padding: 0.5rem; border-radius: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid #334155; }
+        th { font-weight: bold; color: #94a3b8; }
+        tr:hover { background-color: #1f2a3a; }
+    </style>
+</head>
+<body class="bg-gray-900 text-slate-200">
+
+    <!-- Mobile Nav Toggle Button -->
+    <button id="nav-toggle-btn" class="lg:hidden nav-toggle-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+    
+    <div class="dashboard-grid">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="flex items-center justify-between p-6">
+                <div class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.4 15.5C22.6 15.1 21.8 14 20.6 14H19V12h1c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.4c-.6-.6-1.5-1-2.6-1H7C5.9 4 5 4.4 4.4 5H2c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h1v2H2c-1.1 0-1.9 1.1-1.4 2.2l.5 1.2c.4 1 1.4 1.7 2.6 1.7h13.9c1.2 0 2.2-.7 2.6-1.7l.5-1.2zm-15.3 0C5.1 15.1 4.3 14 3.1 14H2V7h1a2 2 0 012 2v1c0 1.1-.9 2-2 2H2v2c0 1.1.9 2 2 2h1.6z"/></svg>
+                    <span class="text-lg font-bold">JOSAA AI</span>
+                </div>
+                <button id="close-nav-btn" class="lg:hidden text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6L6 18M6 6L18 18"/></svg>
+                </button>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="#admin-overview" class="sidebar-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                    <span class="ml-3">Overview</span>
+                </a>
+                <a href="#user-management" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span class="ml-3">Users</span>
+                </a>
+                <a href="#content-management" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span class="ml-3">Content</span>
+                </a>
+                <a href="#analytics" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+                    <span class="ml-3">Analytics</span>
+                </a>
+                <a href="#settings" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44C9.4 2 8.2 3.2 8 4.7l-.7 2.8c-1.2.5-2.2 1.2-3 2.2L3.5 12c.3 1.2 1 2.2 2 3l-.7 2.8c-.2 1.5.8 2.7 2.2 3H12c1.4-.2 2.6-.9 3.5-2.2l.7-2.8c1.2-.5 2.2-1.2 3-2.2L20.5 12c-.3-1.2-1-2.2-2-3l.7-2.8c.2-1.5-.8-2.7-2.2-3H12c-1.4.2-2.6.9-3.5 2.2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span class="ml-3">Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-grow">
+            <header class="flex justify-between items-center mb-10">
+                <h1 class="text-3xl font-bold gradient-text">Admin Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="font-semibold text-slate-300">Admin User</p>
+                        <p class="text-sm text-slate-500">Administrator</p>
+                    </div>
+                    <button id="logout-btn" class="text-slate-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="admin-overview" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Platform Overview</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="card text-center">
+                        <h3 class="text-3xl font-bold text-green-400">15000+</h3>
+                        <p class="text-slate-400 mt-2">Total Students</p>
+                    </div>
+                    <div class="card text-center">
+                        <h3 class="text-3xl font-bold text-yellow-400">200+</h3>
+                        <p class="text-slate-400 mt-2">Total Mentors</p>
+                    </div>
+                    <div class="card text-center">
+                        <h3 class="text-3xl font-bold text-blue-400">95%</h3>
+                        <p class="text-slate-400 mt-2">Prediction Accuracy</p>
+                    </div>
+                    <div class="card text-center">
+                        <h3 class="text-3xl font-bold text-red-400">1</h3>
+                        <p class="text-slate-400 mt-2">Admins</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="user-management" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">User Management</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">All Users</h3>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>john.doe@example.com</td>
+                                    <td>Student</td>
+                                    <td class="text-green-400">Active</td>
+                                    <td>
+                                        <button class="text-indigo-400 hover:text-indigo-600">Edit</button>
+                                        <button class="text-red-400 hover:text-red-600 ml-2">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Jane Doe</td>
+                                    <td>jane.doe@example.com</td>
+                                    <td>Mentor</td>
+                                    <td class="text-green-400">Active</td>
+                                    <td>
+                                        <button class="text-indigo-400 hover:text-indigo-600">Edit</button>
+                                        <button class="text-red-400 hover:text-red-600 ml-2">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggleBtn = document.getElementById('nav-toggle-btn');
+            const closeNavBtn = document.getElementById('close-nav-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const mainContent = document.querySelector('main');
+
+            navToggleBtn.addEventListener('click', () => { sidebar.classList.toggle('is-visible'); });
+            closeNavBtn.addEventListener('click', () => { sidebar.classList.remove('is-visible'); });
+            mainContent.addEventListener('click', (e) => {
+                if (window.innerWidth < 1024 && sidebar.classList.contains('is-visible') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('is-visible');
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const targetId = link.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) { window.scrollTo({ top: targetSection.offsetTop - 50, behavior: 'smooth' }); }
+                    if (window.innerWidth < 1024) { sidebar.classList.remove('is-visible'); }
+                });
+            });
+
+            const initialHash = window.location.hash || '#admin-overview';
+            const initialLink = document.querySelector(`.sidebar-link[href="${initialHash}"]`);
+            if (initialLink) {
+                initialLink.classList.add('active');
+                const targetSection = document.getElementById(initialHash.substring(1));
+                if (targetSection) { window.scrollTo({ top: targetSection.offsetTop, behavior: 'smooth' }); }
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
