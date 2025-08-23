@@ -33,10 +33,7 @@ function showMessageBox(message) {
 
 function closeMessageBox() {
     messageBox.classList.remove('is-visible');
-    // We add a short delay before hiding to allow for the transition to complete
-    setTimeout(() => {
-        messageBox.classList.add('hidden');
-    }, 300);
+    messageBox.classList.add('hidden'); // Corrected to immediately hide the box
 }
 
 // Modal functionality
