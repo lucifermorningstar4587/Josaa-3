@@ -90,8 +90,8 @@
                 <h1 class="text-3xl font-bold gradient-text">Student Dashboard</h1>
                 <div class="flex items-center space-x-4">
                     <div class="text-right">
-                        <p class="font-semibold text-slate-300">John Doe</p>
-                        <p class="text-sm text-slate-500">Student</p>
+                        <p id="user-name" class="font-semibold text-slate-300">Loading...</p>
+                        <p id="user-role" class="text-sm text-slate-500">Student</p>
                     </div>
                     <button id="logout-btn" class="text-slate-400 hover:text-white transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
@@ -154,7 +154,8 @@
                 <h2 class="text-2xl font-bold mb-6">Preference Manager</h2>
                 <div class="card">
                     <h3 class="text-xl font-bold mb-4">Your Preference List</h3>
-                    <ul class="list-decimal list-inside space-y-2 text-slate-400">
+                    <ul class="list-decimal list-inside space-y-2 text-slate-400" id="preference-list">
+                        <!-- Preferences will be dynamically loaded here -->
                         <li>IIT Bombay - Computer Science Engineering</li>
                         <li>IIT Delhi - Computer Science and Engineering</li>
                         <li>NIT Trichy - Computer Science Engineering</li>
@@ -308,7 +309,72 @@
         </main>
     </div>
 
-    <script>
+    <!-- Firebase and Dynamic Content Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCfxnWYVKjjrbRedApuwGFf8pN7Fk-2o4w",
+            authDomain: "josaa3-3e4ef.firebaseapp.com",
+            projectId: "josaa3-3e4ef",
+            storageBucket: "josaa3-3e4ef.firebasestorage.app",
+            messagingSenderId: "927380135936",
+            appId: "1:927380135936:web:0c8ef2ecf3c7d1982df8e5",
+            measurementId: "G-PDDEBBENYM"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // UI elements
+        const userNameEl = document.getElementById('user-name');
+        const userRoleEl = document.getElementById('user-role');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Check for authentication state changes
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in, fetch their data from Firestore
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    userNameEl.textContent = `${userData.firstName} ${userData.lastName}`;
+                    userRoleEl.textContent = userData.role;
+                    // You can now use userData to populate other sections
+                    // e.g., populate a preference list
+                    // const preferenceList = document.getElementById('preference-list');
+                    // if (userData.preferences) {
+                    //     preferenceList.innerHTML = userData.preferences.map(pref => `<li>${pref}</li>`).join('');
+                    // }
+                } else {
+                    console.error("User document not found in Firestore.");
+                    userNameEl.textContent = "User";
+                }
+            } else {
+                // No user is signed in, redirect to login page
+                window.location.href = window.location.origin + '/index.html';
+            }
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to log out?')) {
+                try {
+                    await signOut(auth);
+                    window.location.href = window.location.origin + '/index.html'; // Redirect to landing page on successful logout
+                } catch (error) {
+                    console.error("Logout failed:", error);
+                    alert("Logout failed. Please try again.");
+                }
+            }
+        });
+
+        // Sidebar and UI logic
         document.addEventListener('DOMContentLoaded', function() {
             const navToggleBtn = document.getElementById('nav-toggle-btn');
             const closeNavBtn = document.getElementById('close-nav-btn');
@@ -343,12 +409,6 @@
                 const targetSection = document.getElementById(initialHash.substring(1));
                 if (targetSection) { window.scrollTo({ top: targetSection.offsetTop, behavior: 'smooth' }); }
             }
-
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                if (confirm('Are you sure you want to log out?')) {
-                    window.location.href = 'index.html'; 
-                }
-            });
         });
     </script>
 </body>
