@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOSAA PathFinder - Mentor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; overflow-x: hidden; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 250px 1fr; } }
+        .sidebar { background: #1e293b; box-shadow: 2px 0 5px rgba(0,0,0,0.2); position: fixed; left: 0; top: 0; width: 250px; height: 100%; transform: translateX(-100%); transition: transform 0.3s ease-in-out; z-index: 50; }
+        .sidebar.is-visible { transform: translateX(0); }
+        @media (min-width: 1024px) { .sidebar { position: static; transform: translateX(0); } }
+        .sidebar-link { display: flex; align-items: center; padding: 1rem 1.5rem; color: #94a3b8; font-weight: 600; transition: all 0.2s ease; border-radius: 0.5rem; margin: 0.5rem; }
+        .sidebar-link.active { background: #334155; color: #e2e8f0; }
+        .sidebar-link:hover { background: #334155; color: #e2e8f0; }
+        .main-content { padding: 1.5rem; transition: margin-left 0.3s ease; }
+        @media (min-width: 1024px) { .main-content { padding: 2.5rem; } }
+        .card { background: #1e293b; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
+        .card:hover { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); transform: translateY(-5px); }
+        .gradient-text { background-image: linear-gradient(to right, #8b5cf6, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-toggle-btn { z-index: 100; position: fixed; top: 1rem; left: 1rem; background: #1e293b; border: 1px solid #334155; padding: 0.5rem; border-radius: 0.5rem; }
+    </style>
+</head>
+<body class="bg-gray-900 text-slate-200">
+
+    <!-- Mobile Nav Toggle Button -->
+    <button id="nav-toggle-btn" class="lg:hidden nav-toggle-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+    
+    <div class="dashboard-grid">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="flex items-center justify-between p-6">
+                <div class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.4 15.5C22.6 15.1 21.8 14 20.6 14H19V12h1c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.4c-.6-.6-1.5-1-2.6-1H7C5.9 4 5 4.4 4.4 5H2c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h1v2H2c-1.1 0-1.9 1.1-1.4 2.2l.5 1.2c.4 1 1.4 1.7 2.6 1.7h13.9c1.2 0 2.2-.7 2.6-1.7l.5-1.2zm-15.3 0C5.1 15.1 4.3 14 3.1 14H2V7h1a2 2 0 012 2v1c0 1.1-.9 2-2 2H2v2c0 1.1.9 2 2 2h1.6z"/></svg>
+                    <span class="text-lg font-bold">JOSAA AI</span>
+                </div>
+                <button id="close-nav-btn" class="lg:hidden text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6L6 18M6 6L18 18"/></svg>
+                </button>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="#mentor-profile" class="sidebar-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9.5"/><polyline points="14 2 14 8 20 8"/><path d="M10 20v-5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v5"/><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+                    <span class="ml-3">My Profile</span>
+                </a>
+                <a href="#students" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span class="ml-3">My Students</span>
+                </a>
+                <a href="#chat" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 0 1 4 16.1L2 22l6-2"/><path d="M16 11c1.9 0 3.5 1.6 3.5 3.5s-1.6 3.5-3.5 3.5H12c-1.9 0-3.5-1.6-3.5-3.5c0-1.9 1.6-3.5 3.5-3.5z"/></svg>
+                    <span class="ml-3">Chat</span>
+                </a>
+                <a href="#analytics" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+                    <span class="ml-3">Platform Analytics</span>
+                </a>
+                <a href="#help" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-life-buoy"><circle cx="12" cy="12" r="10"/><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><line x1="12" x2="12" y1="5" y2="2"/><line x1="17" x2="19.2" y1="12" y2="12"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="7" x2="4.8" y1="12" y2="12"/></svg>
+                    <span class="ml-3">Help & Support</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-grow">
+            <header class="flex justify-between items-center mb-10">
+                <h1 class="text-3xl font-bold gradient-text">Mentor Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="font-semibold text-slate-300">Jane Doe</p>
+                        <p class="text-sm text-slate-500">Mentor</p>
+                    </div>
+                    <button id="logout-btn" class="text-slate-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mentor Profile Section -->
+            <section id="mentor-profile" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">My Profile</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Mentor Profile Details</h3>
+                    <div class="space-y-2">
+                        <p><strong>Name:</strong> Jane Doe</p>
+                        <p><strong>Email:</strong> jane.doe@example.com</p>
+                        <p><strong>Bio:</strong> IIT Bombay, JEE Advanced Rank 120 (2020 Batch). Specializes in Computer Science and Engineering.</p>
+                        <p><strong>Availability:</strong> Monday, Wednesday, Friday (4 PM - 6 PM)</p>
+                    </div>
+                    <button class="mt-4 px-6 py-2 bg-indigo-600 rounded-full text-white font-semibold hover:bg-indigo-700 transition-colors">Edit Profile</button>
+                </div>
+            </section>
+
+            <!-- My Students Section -->
+            <section id="students" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">My Students</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Connected Students</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center font-bold">SA</div>
+                                <div>
+                                    <p class="font-semibold">Student Alpha</p>
+                                    <p class="text-sm text-slate-400">JEE Rank: 2500</p>
+                                </div>
+                            </div>
+                            <button class="px-4 py-1 text-sm bg-indigo-600 rounded-full text-white font-semibold">View Profile</button>
+                        </li>
+                        <li class="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center font-bold">SB</div>
+                                <div>
+                                    <p class="font-semibold">Student Beta</p>
+                                    <p class="text-sm text-slate-400">JEE Rank: 4800</p>
+                                </div>
+                            </div>
+                            <button class="px-4 py-1 text-sm bg-indigo-600 rounded-full text-white font-semibold">View Profile</button>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Chat Section -->
+            <section id="chat" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Live Chat with Students</h2>
+                <div class="card h-96 flex items-center justify-center">
+                    <p class="text-slate-500">Live chat interface placeholder</p>
+                </div>
+            </section>
+
+            <!-- Platform Analytics -->
+            <section id="analytics" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Platform Analytics</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Engagement & Impact</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
+                        <div>
+                            <p class="text-4xl font-bold text-green-400">15</p>
+                            <p class="text-sm text-slate-400">Students Mentored</p>
+                        </div>
+                        <div>
+                            <p class="text-4xl font-bold text-yellow-400">9.5/10</p>
+                            <p class="text-sm text-slate-400">Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="help" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Help & Support</h2>
+                <div class="card">
+                    <p class="text-slate-400">Access guides and FAQs to help you assist your students effectively.</p>
+                    <button class="mt-4 px-6 py-2 bg-indigo-600 rounded-full text-white font-semibold hover:bg-indigo-700 transition-colors">View Mentor Guides</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggleBtn = document.getElementById('nav-toggle-btn');
+            const closeNavBtn = document.getElementById('close-nav-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const mainContent = document.querySelector('main');
+
+            navToggleBtn.addEventListener('click', () => { sidebar.classList.toggle('is-visible'); });
+            closeNavBtn.addEventListener('click', () => { sidebar.classList.remove('is-visible'); });
+            mainContent.addEventListener('click', (e) => {
+                if (window.innerWidth < 1024 && sidebar.classList.contains('is-visible') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('is-visible');
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const targetId = link.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) { window.scrollTo({ top: targetSection.offsetTop - 50, behavior: 'smooth' }); }
+                    if (window.innerWidth < 1024) { sidebar.classList.remove('is-visible'); }
+                });
+            });
+
+            const initialHash = window.location.hash || '#mentor-profile';
+            const initialLink = document.querySelector(`.sidebar-link[href="${initialHash}"]`);
+            if (initialLink) {
+                initialLink.classList.add('active');
+                const targetSection = document.getElementById(initialHash.substring(1));
+                if (targetSection) { window.scrollTo({ top: targetSection.offsetTop, behavior: 'smooth' }); }
+            }
+            
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    window.location.href = 'index.html'; 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOSAA PathFinder - Mentor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; overflow-x: hidden; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr; min-height: 100vh; }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: 250px 1fr; } }
+        .sidebar { background: #1e293b; box-shadow: 2px 0 5px rgba(0,0,0,0.2); position: fixed; left: 0; top: 0; width: 250px; height: 100%; transform: translateX(-100%); transition: transform 0.3s ease-in-out; z-index: 50; }
+        .sidebar.is-visible { transform: translateX(0); }
+        @media (min-width: 1024px) { .sidebar { position: static; transform: translateX(0); } }
+        .sidebar-link { display: flex; align-items: center; padding: 1rem 1.5rem; color: #94a3b8; font-weight: 600; transition: all 0.2s ease; border-radius: 0.5rem; margin: 0.5rem; }
+        .sidebar-link.active { background: #334155; color: #e2e8f0; }
+        .sidebar-link:hover { background: #334155; color: #e2e8f0; }
+        .main-content { padding: 1.5rem; transition: margin-left 0.3s ease; }
+        @media (min-width: 1024px) { .main-content { padding: 2.5rem; } }
+        .card { background: #1e293b; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
+        .card:hover { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); transform: translateY(-5px); }
+        .gradient-text { background-image: linear-gradient(to right, #8b5cf6, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-toggle-btn { z-index: 100; position: fixed; top: 1rem; left: 1rem; background: #1e293b; border: 1px solid #334155; padding: 0.5rem; border-radius: 0.5rem; }
+    </style>
+</head>
+<body class="bg-gray-900 text-slate-200">
+
+    <!-- Mobile Nav Toggle Button -->
+    <button id="nav-toggle-btn" class="lg:hidden nav-toggle-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+    
+    <div class="dashboard-grid">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="flex items-center justify-between p-6">
+                <div class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.4 15.5C22.6 15.1 21.8 14 20.6 14H19V12h1c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.4c-.6-.6-1.5-1-2.6-1H7C5.9 4 5 4.4 4.4 5H2c-1.1 0-2 .9-2 2v3c0 1.1.9 2 2 2h1v2H2c-1.1 0-1.9 1.1-1.4 2.2l.5 1.2c.4 1 1.4 1.7 2.6 1.7h13.9c1.2 0 2.2-.7 2.6-1.7l.5-1.2zm-15.3 0C5.1 15.1 4.3 14 3.1 14H2V7h1a2 2 0 012 2v1c0 1.1-.9 2-2 2H2v2c0 1.1.9 2 2 2h1.6z"/></svg>
+                    <span class="text-lg font-bold">JOSAA AI</span>
+                </div>
+                <button id="close-nav-btn" class="lg:hidden text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6L6 18M6 6L18 18"/></svg>
+                </button>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="#mentor-profile" class="sidebar-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9.5"/><polyline points="14 2 14 8 20 8"/><path d="M10 20v-5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v5"/><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+                    <span class="ml-3">My Profile</span>
+                </a>
+                <a href="#students" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span class="ml-3">My Students</span>
+                </a>
+                <a href="#chat" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 0 1 4 16.1L2 22l6-2"/><path d="M16 11c1.9 0 3.5 1.6 3.5 3.5s-1.6 3.5-3.5 3.5H12c-1.9 0-3.5-1.6-3.5-3.5c0-1.9 1.6-3.5 3.5-3.5z"/></svg>
+                    <span class="ml-3">Chat</span>
+                </a>
+                <a href="#analytics" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+                    <span class="ml-3">Platform Analytics</span>
+                </a>
+                <a href="#help" class="sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-life-buoy"><circle cx="12" cy="12" r="10"/><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/><line x1="12" x2="12" y1="5" y2="2"/><line x1="17" x2="19.2" y1="12" y2="12"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="7" x2="4.8" y1="12" y2="12"/></svg>
+                    <span class="ml-3">Help & Support</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content flex-grow">
+            <header class="flex justify-between items-center mb-10">
+                <h1 class="text-3xl font-bold gradient-text">Mentor Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="font-semibold text-slate-300">Jane Doe</p>
+                        <p class="text-sm text-slate-500">Mentor</p>
+                    </div>
+                    <button id="logout-btn" class="text-slate-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Mentor Profile Section -->
+            <section id="mentor-profile" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">My Profile</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Mentor Profile Details</h3>
+                    <div class="space-y-2">
+                        <p><strong>Name:</strong> Jane Doe</p>
+                        <p><strong>Email:</strong> jane.doe@example.com</p>
+                        <p><strong>Bio:</strong> IIT Bombay, JEE Advanced Rank 120 (2020 Batch). Specializes in Computer Science and Engineering.</p>
+                        <p><strong>Availability:</strong> Monday, Wednesday, Friday (4 PM - 6 PM)</p>
+                    </div>
+                    <button class="mt-4 px-6 py-2 bg-indigo-600 rounded-full text-white font-semibold hover:bg-indigo-700 transition-colors">Edit Profile</button>
+                </div>
+            </section>
+
+            <!-- My Students Section -->
+            <section id="students" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">My Students</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Connected Students</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center font-bold">SA</div>
+                                <div>
+                                    <p class="font-semibold">Student Alpha</p>
+                                    <p class="text-sm text-slate-400">JEE Rank: 2500</p>
+                                </div>
+                            </div>
+                            <button class="px-4 py-1 text-sm bg-indigo-600 rounded-full text-white font-semibold">View Profile</button>
+                        </li>
+                        <li class="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center font-bold">SB</div>
+                                <div>
+                                    <p class="font-semibold">Student Beta</p>
+                                    <p class="text-sm text-slate-400">JEE Rank: 4800</p>
+                                </div>
+                            </div>
+                            <button class="px-4 py-1 text-sm bg-indigo-600 rounded-full text-white font-semibold">View Profile</button>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Chat Section -->
+            <section id="chat" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Live Chat with Students</h2>
+                <div class="card h-96 flex items-center justify-center">
+                    <p class="text-slate-500">Live chat interface placeholder</p>
+                </div>
+            </section>
+
+            <!-- Platform Analytics -->
+            <section id="analytics" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Platform Analytics</h2>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Engagement & Impact</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
+                        <div>
+                            <p class="text-4xl font-bold text-green-400">15</p>
+                            <p class="text-sm text-slate-400">Students Mentored</p>
+                        </div>
+                        <div>
+                            <p class="text-4xl font-bold text-yellow-400">9.5/10</p>
+                            <p class="text-sm text-slate-400">Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="help" class="mb-10">
+                <h2 class="text-2xl font-bold mb-6">Help & Support</h2>
+                <div class="card">
+                    <p class="text-slate-400">Access guides and FAQs to help you assist your students effectively.</p>
+                    <button class="mt-4 px-6 py-2 bg-indigo-600 rounded-full text-white font-semibold hover:bg-indigo-700 transition-colors">View Mentor Guides</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggleBtn = document.getElementById('nav-toggle-btn');
+            const closeNavBtn = document.getElementById('close-nav-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const mainContent = document.querySelector('main');
+
+            navToggleBtn.addEventListener('click', () => { sidebar.classList.toggle('is-visible'); });
+            closeNavBtn.addEventListener('click', () => { sidebar.classList.remove('is-visible'); });
+            mainContent.addEventListener('click', (e) => {
+                if (window.innerWidth < 1024 && sidebar.classList.contains('is-visible') && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('is-visible');
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    const targetId = link.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) { window.scrollTo({ top: targetSection.offsetTop - 50, behavior: 'smooth' }); }
+                    if (window.innerWidth < 1024) { sidebar.classList.remove('is-visible'); }
+                });
+            });
+
+            const initialHash = window.location.hash || '#mentor-profile';
+            const initialLink = document.querySelector(`.sidebar-link[href="${initialHash}"]`);
+            if (initialLink) {
+                initialLink.classList.add('active');
+                const targetSection = document.getElementById(initialHash.substring(1));
+                if (targetSection) { window.scrollTo({ top: targetSection.offsetTop, behavior: 'smooth' }); }
+            }
+            
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to log out?')) {
+                    window.location.href = 'index.html'; 
+                }
+            });
+        });
+    </script>
+</body>
+</html>
