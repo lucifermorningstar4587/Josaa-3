@@ -1,161 +1,161 @@
 body {
-    font-family: 'Inter', sans-serif;
-    background: #0f172a; /* Dark background for a sleek, modern look */
-    color: #e2e8f0;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    font-family: 'Inter', sans-serif;
+    background: #0f172a; /* Dark background for a sleek, modern look */
+    color: #e2e8f0;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Hero Section Custom Styles & Animation */
 .hero-section {
-    position: relative;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    overflow: hidden;
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    overflow: hidden;
 }
 
 .hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
-    z-index: 1;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+    z-index: 1;
 }
 
 /* Custom particle canvas for the hero section background */
 #hero-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
 }
 
 /* Custom animation classes */
 .fade-in-up {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 .fade-in-up.active {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .count-up-stat {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #8b5cf6;
-    transition: all 0.5s ease-in-out;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #8b5cf6;
+    transition: all 0.5s ease-in-out;
 }
 
 /* Modal specific styles */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.3s ease-in-out;
-    opacity: 0;
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
 }
 
 .modal.is-visible {
-    display: flex;
-    opacity: 1;
+    display: flex;
+    opacity: 1;
 }
 
 .modal-content {
-    background: #1e293b;
-    padding: 2rem;
-    border-radius: 1rem;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    transform: translateY(-20px);
-    transition: transform 0.3s ease-in-out;
+    background: #1e293b;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease-in-out;
 }
 
 .modal.is-visible .modal-content {
-    transform: translateY(0);
+    transform: translateY(0);
 }
 
 .close-button {
-    float: right;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #94a3b8;
+    float: right;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #94a3b8;
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: #cbd5e1;
-    text-decoration: none;
-    cursor: pointer;
+    color: #cbd5e1;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* Stats Section custom styling for gradient */
 .stats-section {
-    position: relative;
-    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-    padding: 6rem 0;
+    position: relative;
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    padding: 6rem 0;
 }
 
 /* Custom styling for cards */
 .feature-card {
-    background: #1e293b;
-    border-radius: 1rem;
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
+    background: #1e293b;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
 .feature-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
 .prediction-card {
-    background: #1e293b;
-    border-radius: 1rem;
-    padding: 2rem;
-    text-align: center;
-    animation: pulse-glow 2s infinite;
+    background: #1e293b;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    animation: pulse-glow 2s infinite;
 }
 
 @keyframes pulse-glow {
-    0%, 100% {
-        box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 20px rgba(124, 58, 237, 0.7);
-    }
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(124, 58, 237, 0.7);
+    }
 }
 
 /* New grid for all sections on the landing page */
 .landing-page-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem;
 }
 
 @media (min-width: 1024px) {
-    .landing-page-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .landing-page-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
