@@ -1,6 +1,6 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -33,12 +33,8 @@ function showMessageBox(message) {
 
 function closeMessageBox() {
     messageBox.classList.remove('is-visible');
-    setTimeout(() => {
-        messageBox.classList.add('hidden');
-    }, 300); // Wait for transition to finish
+    messageBox.classList.add('hidden');
 }
-// Make the function globally accessible for the onclick attribute
-window.closeMessageBox = closeMessageBox;
 
 // Modal functionality
 const signupModal = document.getElementById('signup-modal');
@@ -103,7 +99,7 @@ document.getElementById('signin-form').addEventListener('submit', async function
 
     try {
         // Sign in user with email and password
-        const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+        const userCredential = await signInWithEmailAndPassword(auth, data.username, data.password);
         const user = userCredential.user;
 
         // Fetch user role from Firestore
