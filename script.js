@@ -22,7 +22,7 @@ const db = getFirestore(app);
 // Custom message box functions
 const messageBox = document.getElementById('messageBox');
 const messageText = document.getElementById('messageText');
-const closeMessageBtn = document.getElementById('closeMessageBtn');
+
 
 function showMessageBox(message) {
     messageText.innerText = message;
@@ -36,7 +36,7 @@ function closeMessageBox() {
     messageBox.classList.remove('is-visible');
     messageBox.classList.add('hidden');
 }
-closeMessageBtn.addEventListener('click', closeMessageBox);
+
 
 // Modal functionality
 const signupModal = document.getElementById('signup-modal');
